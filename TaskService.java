@@ -99,7 +99,7 @@ public class TaskService {
         System.out.println("Список всех активных задач");
         taskList.values()
                 .forEach(System.out::println);
-        taskList.entrySet().forEach(System.out::println);
+
         System.out.println("Список всех удаленных задач:");
         removedTasks.values()
                 .forEach(System.out::println);
@@ -131,11 +131,8 @@ public class TaskService {
             System.out.println("Введите дату d.MM.yyyy");
             DateTimeFormatter format = DateTimeFormatter.ofPattern("d.MM.yyyy");
             Scanner localDate = new Scanner(System.in);
-
             String dateString = localDate.nextLine();
-
             LocalDate.parse(dateString, format);
-
             taskList.values()
                     .stream()
                     .filter(item -> item.appearsln(LocalDate.parse(dateString, format)))

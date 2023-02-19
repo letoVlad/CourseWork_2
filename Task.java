@@ -20,6 +20,9 @@ public abstract class Task {
         IdGenerator++;
     }
 
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     public abstract boolean appearsln(LocalDate localDate);
 
