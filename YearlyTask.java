@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
 
 public class YearlyTask extends Task {
-    public YearlyTask(String title, Type type) {
-        super(title, type);
+    public YearlyTask(String title, String description, Type type) {
+        super(title, description, type);
     }
 
     @Override

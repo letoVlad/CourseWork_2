@@ -13,15 +13,16 @@ public abstract class Task {
     private String description;
 
 
-    public Task(String title, Type type) {
+    public Task(String title, String description, Type type) {
         this.title = title;
         this.type = type;
+        this.description = description;
         this.dateTime = LocalDateTime.now();
         IdGenerator++;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public abstract boolean appearsln(LocalDate localDate);
@@ -61,4 +62,5 @@ public abstract class Task {
                 ", description='" + description + '\'' +
                 '}';
     }
+
 }

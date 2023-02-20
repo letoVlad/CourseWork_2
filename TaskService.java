@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class TaskService {
                     taskEditing();
                     break;
                 case 6:
-                    getTaskGroupedByDate();
+                    getTasksGroupedByDate();
                     break;
                 case 7:
                     return;
@@ -50,6 +51,8 @@ public class TaskService {
             Scanner scanner = new Scanner(System.in);
             System.out.println("Введите название задачи:");
             String taskName = getInput(scanner);
+            System.out.println("Введите описание задачи:");
+            String descriptionTask = getInput(scanner);
             System.out.println("Введите встречу WORK/PERSONAL");
             Type meeting = Type.valueOf(scanner.nextLine().toUpperCase());
             System.out.println("Введите повторяемость задачи:");
@@ -61,23 +64,23 @@ public class TaskService {
             int repeatability = scanner.nextInt();
             switch (repeatability) {
                 case 1:
-                    OneTimeTask oneTimeTask = new OneTimeTask(taskName, meeting);
+                    OneTimeTask oneTimeTask = new OneTimeTask(taskName, descriptionTask, meeting);
                     taskList.put(oneTimeTask.getId(), oneTimeTask);
                     break;
                 case 2:
-                    DailyTask dailyTask = new DailyTask(taskName, meeting);
+                    DailyTask dailyTask = new DailyTask(taskName, descriptionTask, meeting);
                     taskList.put(dailyTask.getId(), dailyTask);
                     break;
                 case 3:
-                    WeeklyTask weeklyTask = new WeeklyTask(taskName, meeting);
+                    WeeklyTask weeklyTask = new WeeklyTask(taskName, descriptionTask, meeting);
                     taskList.put(weeklyTask.getId(), weeklyTask);
                     break;
                 case 4:
-                    MonthlyTask monthlyTask = new MonthlyTask(taskName, meeting);
+                    MonthlyTask monthlyTask = new MonthlyTask(taskName, descriptionTask, meeting);
                     taskList.put(monthlyTask.getId(), monthlyTask);
                     break;
                 case 5:
-                    YearlyTask yearlyTask = new YearlyTask(taskName, meeting);
+                    YearlyTask yearlyTask = new YearlyTask(taskName, descriptionTask, meeting);
                     taskList.put(yearlyTask.getId(), yearlyTask);
                     break;
             }
@@ -99,7 +102,6 @@ public class TaskService {
         System.out.println("Список всех активных задач");
         taskList.values()
                 .forEach(System.out::println);
-
         System.out.println("Список всех удаленных задач:");
         removedTasks.values()
                 .forEach(System.out::println);
@@ -132,54 +134,61 @@ public class TaskService {
             DateTimeFormatter format = DateTimeFormatter.ofPattern("d.MM.yyyy");
             Scanner localDate = new Scanner(System.in);
             String dateString = localDate.nextLine();
-            LocalDate.parse(dateString, format);
+            var date = LocalDate.parse(dateString, format);
             taskList.values()
                     .stream()
-                    .filter(item -> item.appearsln(LocalDate.parse(dateString, format)))
+                    .filter(item -> item.appearsln(date))
                     .forEach(p -> System.out.println(p.getTitle()));
         } catch (DateTimeException e) {
             System.out.println("Введена дата не правильно");
         }
     }
 
-    // Редактирование поля задачи
+    // Редактирование поля/описание задачи
     static void taskEditing() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите id задачи для редактирования");
         int taskId = scanner.nextInt();
         scanner.nextLine(); // очистка
 
-        System.out.println("Введите новое значение");
+        System.out.println("Введите новое название задачи");
         String taskNewTitle = scanner.nextLine();
+        System.out.println("Введите новое описание задачи");
+        String taskNewDescription = scanner.nextLine();
         if (taskId >= 0 && taskId < taskList.size()) { // Проверить, что taskId в допустимом диапазоне
             taskList.get(taskId).setTitle(taskNewTitle);
+            taskList.get(taskId).setDescription(taskNewDescription);
             System.out.println("Задача успешно изменена");
         } else {
             System.out.println("Недопустимый идентификатор задачи");
         }
     }
 
-    static void getTaskGroupedByDate() {
-        System.out.println("Введите c какой даты выводить задачи в формате -  d.MM.yyyy");
+    static void getTasksGroupedByDate() {
+        List<Task> groupedTasks = new ArrayList<>();
+        System.out.println("Введите дату, с которой нужно вывести задачи в формате d.MM.yyyy");
         DateTimeFormatter format = DateTimeFormatter.ofPattern("d.MM.yyyy");
         Scanner scanner = new Scanner(System.in);
         String dateString = scanner.nextLine();
-
-
-        System.out.println("Введите по какую дату выводить задачи в формате - d.MM.yyyy");
+        LocalDateTime dateFrom = LocalDateTime.of(LocalDate.parse(dateString, format), LocalTime.MIN);
+        System.out.println("Введите дату, по которую нужно вывести задачи в формате d.MM.yyyy");
         String dateString2 = scanner.nextLine();
+        LocalDateTime dateTo = LocalDateTime.of(LocalDate.parse(dateString2, format), LocalTime.MAX);
 
-        LocalDate dateFrom = LocalDate.parse(dateString, format);
-        LocalDate dateTo = LocalDate.parse(dateString2, format);
-
-        for (Task entry : taskList.values()) {
-
-            if (entry.appearsln(dateFrom) != entry.appearsln(dateTo.plusDays(1))) {
-                System.out.println(entry.getTitle());
+        for (Task task : taskList.values()) {
+            if (!task.getDateTime().isBefore(dateFrom) && !task.getDateTime().isAfter(dateTo)) {
+                groupedTasks.add(task);
             }
+        }
+        if (groupedTasks.isEmpty()) {
+            System.out.println("Нет задач на заданный период");
+        } else {
+            System.out.println("Задачи на заданный период:");
+            groupedTasks.forEach(s -> System.out.println(s.getTitle()));
         }
     }
 }
+
 
 
 

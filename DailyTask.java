@@ -5,8 +5,8 @@ import java.time.chrono.ChronoLocalDate;
 
 public class DailyTask extends Task {
 
-    public DailyTask(String title, Type type) {
-        super(title, type);
+    public DailyTask(String title, String description, Type type) {
+        super(title, description, type);
     }
 
     @Override

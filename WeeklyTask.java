@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
 
 public class WeeklyTask extends Task {
-    public WeeklyTask(String title, Type type) {
-        super(title, type);
+    public WeeklyTask(String title, String description, Type type) {
+        super(title, description, type);
     }
 
     @Override                           //2023-02-17
